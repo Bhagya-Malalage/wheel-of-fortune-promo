@@ -1,65 +1,100 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import BackgroundObjects from "@/components/BackgroundObjects";
+import Wheel from "@/components/Wheel";
+import ClaimModal from "@/components/ClaimModal";
+import confetti from "canvas-confetti";
+
+const scriptFont = "'Dancing Script', 'Alex Brush', 'Great Vibes', cursive";
+
+export default function LandingPage() {
+  const maxAttempts = 2;
+  const [attempts, setAttempts] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [wonPrize, setWonPrize] = useState("");
+
+  const handleFinished = (prize: string) => {
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+    setWonPrize(prize);
+
+    if (newAttempts >= maxAttempts) {
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ["#fbbf24", "#ffffff", "#6366f1"],
+      });
+      setTimeout(() => setShowModal(true), 1500);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden select-none bg-[#60a5fa]">
+      <style jsx global>{`
+        @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap");
+      `}</style>
+
+      <BackgroundObjects />
+
+      {/* --- ARCED 3D HEADER SECTION --- */}
+      <div className="relative z-30 w-full flex flex-col items-center pt-8 md:pt-14 mb-10 md:mb-16">
+        <div className="relative w-[340px] h-[100px] md:w-[650px] md:h-[160px]">
+          <svg
+            viewBox="0 0 500 180"
+            className="w-full h-full overflow-visible drop-shadow-[0_10px_0_#92400e]"
+          >
+            <defs>
+              <path
+                id="curve"
+                d="M 50,140 Q 250,20 450,140"
+                fill="transparent"
+              />
+            </defs>
+            <text
+              width="500"
+              className="fill-yellow-400 font-[1000] italic uppercase"
+              style={{
+                fontSize: "105px",
+                fontFamily:
+                  'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif',
+                letterSpacing: "-2px",
+              }}
+            >
+              <textPath href="#curve" startOffset="50%" textAnchor="middle">
+                WHEEL OF
+              </textPath>
+            </text>
+          </svg>
+
+          <div className="absolute inset-0 flex items-end justify-center">
+            <h2
+              className="text-4xl md:text-7xl text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+              style={{
+                fontFamily: scriptFont,
+                fontWeight: "700",
+                transform: "translateY(25px)",
+                letterSpacing: "1px",
+              }}
+            >
+              Fortune
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      {/* --- SPINNING WHEEL --- */}
+      <div className="relative z-10 scale-[0.7] md:scale-90 lg:scale-105 mt-10 md:mt-16 transform-gpu">
+        <Wheel
+          onFinished={handleFinished}
+          disabled={attempts >= maxAttempts}
+          attempts={attempts}
+          maxAttempts={maxAttempts}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+
+      <ClaimModal isOpen={showModal} prize={wonPrize} />
+    </main>
   );
 }
