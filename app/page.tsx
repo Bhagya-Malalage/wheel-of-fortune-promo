@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import BackgroundObjects from "@/components/BackgroundObjects";
 import Wheel from "@/components/Wheel";
 import ClaimModal from "@/components/ClaimModal";
 import confetti from "canvas-confetti";
-
-const scriptFont = "'Dancing Script', 'Alex Brush', 'Great Vibes', cursive";
 
 export default function LandingPage() {
   const maxAttempts = 2;
@@ -18,74 +17,42 @@ export default function LandingPage() {
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
     setWonPrize(prize);
-
     if (newAttempts >= maxAttempts) {
-      confetti({
-        particleCount: 200,
-        spread: 100,
-        origin: { y: 0.6 },
-        colors: ["#fbbf24", "#ffffff", "#6366f1"],
-      });
+      confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ["#fbbf24", "#ffffff", "#ef4444"] });
       setTimeout(() => setShowModal(true), 1500);
     }
   };
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden select-none bg-[#60a5fa]">
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap");
-      `}</style>
-
+    <main className="relative min-h-screen flex flex-col items-center justify-between overflow-hidden select-none bg-black">
       <BackgroundObjects />
 
-      {/* --- ARCED 3D HEADER SECTION --- */}
-      <div className="relative z-30 w-full flex flex-col items-center pt-8 md:pt-14 mb-10 md:mb-16">
-        <div className="relative w-[340px] h-[100px] md:w-[650px] md:h-[160px]">
-          <svg
-            viewBox="0 0 500 180"
-            className="w-full h-full overflow-visible drop-shadow-[0_10px_0_#92400e]"
+      {/* --- CASINO HEADER --- */}
+      <div className="relative z-30 w-full flex flex-col items-center pt-8 md:pt-12 px-4">
+        <div className="text-center">
+          <motion.h1 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="text-5xl md:text-7xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-yellow-500 to-amber-700 leading-none uppercase"
+            style={{ fontFamily: 'Impact, sans-serif' }}
           >
-            <defs>
-              <path
-                id="curve"
-                d="M 50,140 Q 250,20 450,140"
-                fill="transparent"
-              />
-            </defs>
-            <text
-              width="500"
-              className="fill-yellow-400 font-[1000] italic uppercase"
-              style={{
-                fontSize: "105px",
-                fontFamily:
-                  'Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif',
-                letterSpacing: "-2px",
-              }}
-            >
-              <textPath href="#curve" startOffset="50%" textAnchor="middle">
-                WHEEL OF
-              </textPath>
-            </text>
-          </svg>
-
-          <div className="absolute inset-0 flex items-end justify-center">
-            <h2
-              className="text-4xl md:text-7xl text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
-              style={{
-                fontFamily: scriptFont,
-                fontWeight: "700",
-                transform: "translateY(25px)",
-                letterSpacing: "1px",
-              }}
-            >
-              Fortune
-            </h2>
-          </div>
+            WHEEL OF
+          </motion.h1>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-1 md:mt-2"
+          >
+            <span className="text-3xl md:text-5xl font-bold text-white tracking-[0.4em] uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+              FORTUNE
+            </span>
+          </motion.div>
         </div>
       </div>
 
-      {/* --- SPINNING WHEEL --- */}
-      <div className="relative z-10 scale-[0.7] md:scale-90 lg:scale-105 mt-10 md:mt-16 transform-gpu">
+      {/* --- WHEEL SECTION --- */}
+      <div className="relative z-20 scale-[0.65] sm:scale-80 md:scale-95 flex-grow flex items-center transform-gpu">
         <Wheel
           onFinished={handleFinished}
           disabled={attempts >= maxAttempts}
@@ -93,6 +60,17 @@ export default function LandingPage() {
           maxAttempts={maxAttempts}
         />
       </div>
+
+      {/* --- MINIMALIST FOOTER BAR --- */}
+      <footer className="relative z-40 w-full bg-black/95 backdrop-blur-md border-t border-white/5 py-3 md:py-4 px-6">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-[9px] md:text-[11px] text-gray-400 tracking-tight font-medium leading-relaxed">
+            <span className="text-gray-200 font-bold uppercase mr-1">Terms and Conditions:</span> 
+            Eligibility: Open to all users who have completed FTD. Participation: Each user gets two free spins. 
+            Rewards: Promocodes are to be availed during a redeposit. The Brand reserves the right to modify or cancel without prior notice.
+          </p>
+        </div>
+      </footer>
 
       <ClaimModal isOpen={showModal} prize={wonPrize} />
     </main>
